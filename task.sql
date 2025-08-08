@@ -1,16 +1,16 @@
 -- Use our database
 USE ShopDB; 
 
--- Some data should be created outside the transaction (here)
-INSERT INTO Orders (CustomerID, Date)
-VALUES (1, '2023-01-01');
-
 -- Start the transaction 
 START TRANSACTION; 
 
--- And some data should be created inside the transaction 
+-- Create order inside the transaction for atomicity
+INSERT INTO Orders (CustomerID, Date)
+VALUES (1, '2023-01-01');
+
+-- Create order item linked to the just created order
 INSERT INTO OrderItems (OrderID, ProductID, Count)
-VALUES (1, 1, 1);
+VALUES (LAST_INSERT_ID(), 1, 1);
 
 UPDATE Products SET WarehouseAmount = WarehouseAmount - 1 WHERE ID = 1;
 

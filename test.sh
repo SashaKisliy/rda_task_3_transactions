@@ -13,20 +13,20 @@ else
     exit 1
 fi
 
-# test if "INSERT INTO Orders" is before the "START TRANSACTION"
-insertIntoOrders=$(echo $taskText | grep "INSERT INTO Orders" || true)
-if [ -z "$insertIntoOrders" ]; then
+# test that "INSERT INTO Orders" exists and is inside the transaction
+insertIntoOrdersAnywhere=$(echo $taskText | grep "INSERT INTO Orders" || true)
+if [ -z "$insertIntoOrdersAnywhere" ]; then
     echo "error: Orders are not updated in the script"
     exit 1
 else 
     echo "checked if Orders are updated inside the script - ok"
 fi
-insertIntoOrders=$(echo $afterTransactionStart | grep "INSERT INTO Orders" || true)
-if [ -z "$insertIntoOrders" ]; then
-    echo "checked if Orders are updated ouside of the transaction - ok"
-else 
-    echo "error: Orders are updated inside of the transaction"
+insertIntoOrdersInside=$(echo $afterTransactionStart | grep "INSERT INTO Orders" || true)
+if [ -z "$insertIntoOrdersInside" ]; then
+    echo "error: Orders are not updated inside of the transaction"
     exit 1
+else 
+    echo "checked if Orders are updated inside of the transaction - ok"
 fi
 
 # test if "INSERT INTO OrderItems" is between the "START TRANSACTION" and "COMMIT"
